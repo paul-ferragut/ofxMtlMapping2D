@@ -48,7 +48,7 @@ class ofxMtlMapping2D {
         string _mappingXmlFilePath;
         ofFbo _fbo;
 
-		ofImage gradientBlend;
+		//ofShader shaderBlend;
         ofxXmlSettings _shapesListXML;
         list<ofxMtlMapping2DShape*>::iterator iteratorForShapeWithId(int shapeId);
 

@@ -241,7 +241,7 @@ void ofxMtlMapping2D::render()
     for (it=ofxMtlMapping2DShapes::pmShapes.begin(); it!=ofxMtlMapping2DShapes::pmShapes.end(); it++) {
         ofxMtlMapping2DShape* shape = *it;
         
-        if (shape->shapeType != MAPPING_2D_SHAPE_MASK) {
+        if (shape->shapeType != MAPPING_2D_SHAPE_MASK && shape->shapeType != MAPPING_2D_SHAPE_BLENDMASK) {
             shape->render();
         }
     }
@@ -256,6 +256,17 @@ void ofxMtlMapping2D::render()
             shape->render();
         }
     }
+
+	// Blend Masks - non textured shapes
+	ofEnableAlphaBlending();
+	ofSetColor(255,255,255, 255);	
+	for (it = ofxMtlMapping2DShapes::pmShapes.begin(); it != ofxMtlMapping2DShapes::pmShapes.end(); it++) {
+		ofxMtlMapping2DShape* shape = *it;
+
+		if (shape->shapeType == MAPPING_2D_SHAPE_BLENDMASK) {
+			shape->render();	
+		}
+	}
 }
 
 
@@ -418,7 +429,7 @@ void ofxMtlMapping2D::mousePressed(ofMouseEventArgs &e)
                 shape->enable();
             }
         } else if (ofxMtlMapping2DControls::mapping2DControls()->mappingMode() == MAPPING_MODE_INPUT) {
-            if (shape->inputPolygon || (shape->shapeType != MAPPING_2D_SHAPE_MASK && shape->shapeType != MAPPING_2D_SHAPE_BLENDMASK)) {
+            if (shape->inputPolygon || (shape->shapeType != MAPPING_2D_SHAPE_MASK && shape->shapeType != MAPPING_2D_SHAPE_BLENDMASK)) { //
                 if(shape->inputPolygon->hitTest(eX, eY)) {
                     grabbedOne = true;
                     shape->inputPolygon->select(eX, eY);
@@ -450,7 +461,7 @@ void ofxMtlMapping2D::mousePressed(ofMouseEventArgs &e)
                     ofLog(OF_LOG_NOTICE, "No shape has been selected, can not add a vertex");
                 }
             }
-
+			/*
 			if (ofxMtlMapping2DShape::activeShape->shapeType == MAPPING_2D_SHAPE_BLENDMASK) {
 				ofxMtlMapping2DShape* shape = ofxMtlMapping2DShape::activeShape;
 				if (shape) {
@@ -461,6 +472,7 @@ void ofxMtlMapping2D::mousePressed(ofMouseEventArgs &e)
 					ofLog(OF_LOG_NOTICE, "No shape has been selected, can not add a vertex");
 				}
 			}
+			*/
         }
     }
     
@@ -680,7 +692,7 @@ void ofxMtlMapping2D::loadShapesList()
                 }
                 _shapesListXML.popTag();
                 
-                
+                //
                 if( newShape->shapeType != MAPPING_2D_SHAPE_MASK && newShape->shapeType != MAPPING_2D_SHAPE_BLENDMASK) {
                     //INPUT QUADS
                     _shapesListXML.pushTag("inputPolygon", 0);
@@ -770,7 +782,7 @@ void ofxMtlMapping2D::saveShapesList()
             newShapesListXML.addAttribute("vertex", "y", (int)vertex->center.y, tagNum);
         }
         newShapesListXML.popTag();
-        
+        //
         if(shape->shapeType != MAPPING_2D_SHAPE_MASK && shape->shapeType != MAPPING_2D_SHAPE_BLENDMASK) {
             //Input Quads
             tagNum = newShapesListXML.addTag("inputPolygon");
