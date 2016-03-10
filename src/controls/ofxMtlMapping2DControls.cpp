@@ -71,6 +71,7 @@ ofxMtlMapping2DControls::ofxMtlMapping2DControls(int width, const string& file)
     shapeTypesAsString[MAPPING_2D_SHAPE_GRID] = "grid";
     shapeTypesAsString[MAPPING_2D_SHAPE_TRIANGLE] = "triangle";
     shapeTypesAsString[MAPPING_2D_SHAPE_MASK] = "mask";
+	shapeTypesAsString[MAPPING_2D_SHAPE_BLENDMASK] = "blendMask";
     
     // set default values
     _saveMapping = false;
@@ -80,6 +81,7 @@ ofxMtlMapping2DControls::ofxMtlMapping2DControls(int width, const string& file)
     _createNewGrid = false;
     _createNewTriangle = false;
     _createNewMask = false;
+	_createNewBlendMask = false;
     _showShapesId = true;
     _mappingModeChanged = true; // initialized to true so that when the app launch the 'shapes' are correctly setted.
     _mappingMode = MAPPING_MODE_OUTPUT;
@@ -125,6 +127,7 @@ ofxMtlMapping2DControls::ofxMtlMapping2DControls(int width, const string& file)
         _toolsCanvas->addWidgetDown(new ofxUIImageToggle(kToggleSize, kToggleSize, _createNewGrid, "GUI/grid.png", kSettingMappingCreateNewGrid));
         _toolsCanvas->addWidgetDown(new ofxUIImageToggle(kToggleSize, kToggleSize, _createNewTriangle, "GUI/triangle.png", kSettingMappingCreateNewTriangle));
         _toolsCanvas->addWidgetDown(new ofxUIImageToggle(kToggleSize, kToggleSize, _createNewMask, "GUI/mask.png", kSettingMappingCreateNewMask));
+		_toolsCanvas->addWidgetDown(new ofxUIImageToggle(kToggleSize, kToggleSize, _createNewBlendMask, "GUI/maskBlend.png", kSettingMappingCreateNewBlendMask));
     }
     
     // add mapping shape's details
@@ -201,10 +204,18 @@ void ofxMtlMapping2DControls::toolsUiEvent(ofxUIEventArgs &event)
     }
     else if (name == kSettingMappingCreateNewMask) {
         // will happen only if ofxMtlMapping2DSettings::kIsManuallyCreatingShapeEnabled is true
+		cout << "NEW MASK" << endl;
         if(getToggleValue(name)) {
             _createNewMask = true;
         }
     }
+	else if (name == kSettingMappingCreateNewBlendMask) {
+		// will happen only if ofxMtlMapping2DSettings::kIsManuallyCreatingShapeEnabled is true
+		cout << "NEW BLEND MASK" << endl;
+		if (getToggleValue(name)) {
+			_createNewBlendMask = true;
+		}
+	}
     
     // ----
     if (getToggleValue(name)) {
@@ -225,6 +236,7 @@ void ofxMtlMapping2DControls::toolsUiEvent(ofxUIEventArgs &event)
                 ((ofxUIImageToggle *)_toolsCanvas->getWidget(kSettingMappingCreateNewGrid))->setVisible(true);
                 ((ofxUIImageToggle *)_toolsCanvas->getWidget(kSettingMappingCreateNewTriangle))->setVisible(true);
                 ((ofxUIImageToggle *)_toolsCanvas->getWidget(kSettingMappingCreateNewMask))->setVisible(true);
+				((ofxUIImageToggle *)_toolsCanvas->getWidget(kSettingMappingCreateNewBlendMask))->setVisible(true);
             }
             
             // ---
@@ -241,6 +253,7 @@ void ofxMtlMapping2DControls::toolsUiEvent(ofxUIEventArgs &event)
                 ((ofxUIImageToggle *)_toolsCanvas->getWidget(kSettingMappingCreateNewGrid))->setVisible(false);
                 ((ofxUIImageToggle *)_toolsCanvas->getWidget(kSettingMappingCreateNewTriangle))->setVisible(false);
                 ((ofxUIImageToggle *)_toolsCanvas->getWidget(kSettingMappingCreateNewMask))->setVisible(false);
+				((ofxUIImageToggle *)_toolsCanvas->getWidget(kSettingMappingCreateNewBlendMask))->setVisible(false);
             }
             
             // ---
@@ -291,6 +304,7 @@ void ofxMtlMapping2DControls::setUIShapeEditingState(bool isOn)
     ((ofxUIImageToggle *)_toolsCanvas->getWidget(kSettingMappingCreateNewGrid))->setVisible(_editShapes);
     ((ofxUIImageToggle *)_toolsCanvas->getWidget(kSettingMappingCreateNewTriangle))->setVisible(_editShapes);
     ((ofxUIImageToggle *)_toolsCanvas->getWidget(kSettingMappingCreateNewMask))->setVisible(_editShapes);
+	((ofxUIImageToggle *)_toolsCanvas->getWidget(kSettingMappingCreateNewBlendMask))->setVisible(_editShapes);
 }
 
 
@@ -352,7 +366,7 @@ void ofxMtlMapping2DControls::refreshShapesListForMappingMode(ofxMtlMapping2DMod
     for (it=ofxMtlMapping2DShapes::pmShapes.rbegin(); it!=ofxMtlMapping2DShapes::pmShapes.rend(); it++) {
         ofxMtlMapping2DShape* shape = *it;
         
-        if (mappingMode == MAPPING_MODE_OUTPUT || (mappingMode == MAPPING_MODE_INPUT && shape->shapeType != MAPPING_2D_SHAPE_MASK)) {
+        if (mappingMode == MAPPING_MODE_OUTPUT || (mappingMode == MAPPING_MODE_INPUT && shape->shapeType != MAPPING_2D_SHAPE_MASK && shape->shapeType != MAPPING_2D_SHAPE_BLENDMASK)) {
             ofxMtlMapping2DControls::mapping2DControls()->addShapeToList(shape->shapeId, shape->shapeType);
         }
     }
@@ -482,6 +496,9 @@ void ofxMtlMapping2DControls::resetCreateNewShape()
     
     _createNewMask = false;
     ((ofxUIToggle *)_toolsCanvas->getWidget(kSettingMappingCreateNewMask))->setValue(false);
+
+	_createNewBlendMask = false;
+	((ofxUIToggle *)_toolsCanvas->getWidget(kSettingMappingCreateNewBlendMask))->setValue(false);
 }
 
 //--------------------------------------------------------------

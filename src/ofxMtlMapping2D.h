@@ -12,6 +12,7 @@
 #include "ofxMtlMapping2DGrid.h"
 #include "ofxMtlMapping2DTriangle.h"
 #include "ofxMtlMapping2DMask.h"
+#include "ofxMtlMapping2DBlendMask.h"
 #include "ofxMtlMapping2DShape.h"
 
 #include "mtlUtils.h"
@@ -37,11 +38,17 @@ class ofxMtlMapping2D {
         void windowResized(ofResizeEventArgs &e);
 
         vector<ofPolyline*> getMaskShapes();
+		vector<ofPolyline*> getBlendMaskShapes();
         void chessBoard(int nbOfCol = 10);
+
+		void grid(int nbOfCol = 10);
+		void blend(vector<ofPolyline*>p);
 
     private:
         string _mappingXmlFilePath;
         ofFbo _fbo;
+
+		ofImage gradientBlend;
         ofxXmlSettings _shapesListXML;
         list<ofxMtlMapping2DShape*>::iterator iteratorForShapeWithId(int shapeId);
 
@@ -51,6 +58,7 @@ class ofxMtlMapping2D {
         void createGrid(float _x, float _y);
         void createTriangle(float _x, float _y);
         void createMask(float _x, float _y);
+		void createBlendMask(float _x, float _y);
         void deleteShape();
     
         void loadShapesList();

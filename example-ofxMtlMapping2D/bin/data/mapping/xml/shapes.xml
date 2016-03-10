@@ -1,47 +1,26 @@
 <root>
-    <shape id="0">
-        <setting key="type">quad</setting>
-        <outputVertices>
-            <vertex x="333" y="125"></vertex>
-            <vertex x="473" y="178"></vertex>
-            <vertex x="474" y="428"></vertex>
-            <vertex x="333" y="353"></vertex>
-        </outputVertices>
-        <inputPolygon>
-            <vertex x="204" y="92"></vertex>
-            <vertex x="409" y="92"></vertex>
-            <vertex x="409" y="296"></vertex>
-            <vertex x="204" y="296"></vertex>
-        </inputPolygon>
-    </shape>
-    <shape id="1">
-        <setting key="type">quad</setting>
-        <outputVertices>
-            <vertex x="473" y="180"></vertex>
-            <vertex x="665" y="180"></vertex>
-            <vertex x="668" y="429"></vertex>
-            <vertex x="473" y="429"></vertex>
-        </outputVertices>
-        <inputPolygon>
-            <vertex x="408" y="194"></vertex>
-            <vertex x="612" y="194"></vertex>
-            <vertex x="612" y="399"></vertex>
-            <vertex x="408" y="399"></vertex>
-        </inputPolygon>
-    </shape>
     <shape id="2">
         <setting key="type">quad</setting>
         <outputVertices>
-            <vertex x="333" y="125"></vertex>
-            <vertex x="529" y="126"></vertex>
-            <vertex x="665" y="179"></vertex>
-            <vertex x="471" y="179"></vertex>
+            <vertex x="173" y="23"></vertex>
+            <vertex x="963" y="37"></vertex>
+            <vertex x="955" y="1023"></vertex>
+            <vertex x="172" y="1030"></vertex>
         </outputVertices>
         <inputPolygon>
-            <vertex x="714" y="91"></vertex>
-            <vertex x="919" y="91"></vertex>
-            <vertex x="919" y="298"></vertex>
-            <vertex x="714" y="298"></vertex>
+            <vertex x="33" y="8"></vertex>
+            <vertex x="944" y="8"></vertex>
+            <vertex x="944" y="1059"></vertex>
+            <vertex x="33" y="1059"></vertex>
         </inputPolygon>
     </shape>
+    <shape id="3">
+        <setting key="type">mask</setting>
+        <outputVertices>
+            <vertex x="1205" y="495"></vertex>
+            <vertex x="1155" y="595"></vertex>
+            <vertex x="1255" y="595"></vertex>
+        </outputVertices>
+    </shape>
+
 </root>

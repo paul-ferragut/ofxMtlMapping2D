@@ -162,8 +162,8 @@ void ofxMtlMapping2DPolygon::drawID()
 
 
 
-#pragma mark -
-#pragma mark Update Shape's elemets
+//#pragma mark -
+//#pragma mark Update Shape's elemets
 
 //--------------------------------------------------------------
 void ofxMtlMapping2DPolygon::updatePosition(int xInc, int yInc)

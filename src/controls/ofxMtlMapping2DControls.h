@@ -18,6 +18,7 @@
 #define kSettingMappingCreateNewGrid        "MAPPING:CREATE_NEW_GRID"
 #define kSettingMappingCreateNewTriangle    "MAPPING:CREATE_NEW_TRIANGLE"
 #define kSettingMappingCreateNewMask        "MAPPING:CREATE_NEW_MASK"
+#define kSettingMappingCreateNewBlendMask   "MAPPING:CREATE_NEW_BLENDMASK"
 
 #define kSettingMappingShowShapesId         "MAPPING:SHOW_SHAPES_ID"
 
@@ -50,6 +51,7 @@ class ofxMtlMapping2DControls
         const bool& createNewGrid() { return _createNewGrid; }
         const bool& createNewTriangle() { return _createNewTriangle; }
         const bool& createNewMask() { return _createNewMask; }
+		const bool& createNewBlendMask() { return _createNewBlendMask; }
         void resetCreateNewShape();
         const bool& showShapesId() { return _showShapesId; }
     
@@ -112,6 +114,7 @@ class ofxMtlMapping2DControls
         bool _createNewGrid;
         bool _createNewTriangle;
         bool _createNewMask;
+		bool _createNewBlendMask;
         bool _showShapesId;
         bool _selectedShapeChanged;
         int _selectedShapeId;

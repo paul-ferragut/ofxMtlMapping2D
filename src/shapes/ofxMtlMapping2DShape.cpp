@@ -40,7 +40,7 @@ void ofxMtlMapping2DShape::init(int sId, bool defaultShape)
     }
     
     _super::init(sId, defaultShape);
-    
+	cout << "init shape" << endl;
     calcHomography();
 }
 
@@ -53,9 +53,9 @@ void ofxMtlMapping2DShape::update()
     if(activePolygon != this && activePolygon != inputPolygon)
         return;
     
-    if(activePolygon == this || (activePolygon == inputPolygon && inputPolygon) || (activePolygon == this && !inputPolygon && shapeType == MAPPING_2D_SHAPE_MASK)) {
+    if(activePolygon == this || (activePolygon == inputPolygon && inputPolygon) || (activePolygon == this && !inputPolygon && (shapeType == MAPPING_2D_SHAPE_MASK || shapeType == MAPPING_2D_SHAPE_BLENDMASK))) {
         setAsActiveShape();
-        
+		cout << "set activate shape" << endl;
         // ---- recalculate the homography transformation matrix (for textured Shapes - for now only Quads) .
         calcHomography();
     }
@@ -84,7 +84,7 @@ void ofxMtlMapping2DShape::draw()
 
     // ---- INPUT MODE
     } else if (ofxMtlMapping2DControls::mapping2DControls()->mappingMode() == MAPPING_MODE_INPUT) {
-        if (inputPolygon && shapeType != MAPPING_2D_SHAPE_MASK) {
+        if (inputPolygon && shapeType != MAPPING_2D_SHAPE_MASK && shapeType != MAPPING_2D_SHAPE_BLENDMASK) {
             inputPolygon->draw();
         }
     }
@@ -106,7 +106,7 @@ void ofxMtlMapping2DShape::drawID()
     
     // ---- INPUT MODE
     } else if (ofxMtlMapping2DControls::mapping2DControls()->mappingMode() == MAPPING_MODE_INPUT) {
-        if (inputPolygon && shapeType != MAPPING_2D_SHAPE_MASK) {
+        if (inputPolygon && shapeType != MAPPING_2D_SHAPE_MASK && shapeType != MAPPING_2D_SHAPE_BLENDMASK) {
             inputPolygon->drawID();
         }
     }
@@ -119,7 +119,7 @@ void ofxMtlMapping2DShape::setAsActiveShape(bool fromUI)
     if(ofxMtlMapping2DControls::mapping2DControls()->mappingMode() == MAPPING_MODE_OUTPUT) {
         if (activeShape != this) {
             // ----
-            if (shapeType == MAPPING_2D_SHAPE_MASK) {
+            if (shapeType == MAPPING_2D_SHAPE_MASK  || shapeType == MAPPING_2D_SHAPE_BLENDMASK) {
                 ofxMtlMapping2DControls::mapping2DControls()->hideInputModeToggle();
             } else {
                 ofxMtlMapping2DControls::mapping2DControls()->showInputModeToggle();

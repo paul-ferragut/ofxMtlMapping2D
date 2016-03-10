@@ -104,6 +104,12 @@ void ofxMtlMapping2D::update()
         createMask(ofGetWidth()/2, ofGetHeight()/2);
         return;
     }
+
+	if (ofxMtlMapping2DControls::mapping2DControls()->createNewBlendMask()) {
+		ofxMtlMapping2DControls::mapping2DControls()->resetCreateNewShape();
+		createBlendMask(ofGetWidth() / 2, ofGetHeight() / 2);
+		return;
+	}
     
     // ----
     // Selected shape with UI
@@ -308,6 +314,19 @@ void ofxMtlMapping2D::createMask(float _x, float _y)
 }
 
 //--------------------------------------------------------------
+void ofxMtlMapping2D::createBlendMask(float _x, float _y)
+{
+	ofxMtlMapping2DShape::nextShapeId++;
+	cout << "create blend mask" << endl;
+	ofxMtlMapping2DShape* newShape = new ofxMtlMapping2DBlendMask();
+	newShape->shapeType = MAPPING_2D_SHAPE_BLENDMASK;
+	newShape->init(ofxMtlMapping2DShape::nextShapeId, true);
+	ofxMtlMapping2DShapes::pmShapes.push_front(newShape);
+
+	ofxMtlMapping2DControls::mapping2DControls()->addShapeToList(ofxMtlMapping2DShape::nextShapeId, MAPPING_2D_SHAPE_BLENDMASK);
+}
+
+//--------------------------------------------------------------
 void ofxMtlMapping2D::deleteShape()
 {
     if (ofxMtlMapping2DShape::activeShape) {
@@ -399,7 +418,7 @@ void ofxMtlMapping2D::mousePressed(ofMouseEventArgs &e)
                 shape->enable();
             }
         } else if (ofxMtlMapping2DControls::mapping2DControls()->mappingMode() == MAPPING_MODE_INPUT) {
-            if (shape->inputPolygon || shape->shapeType != MAPPING_2D_SHAPE_MASK) {
+            if (shape->inputPolygon || (shape->shapeType != MAPPING_2D_SHAPE_MASK && shape->shapeType != MAPPING_2D_SHAPE_BLENDMASK)) {
                 if(shape->inputPolygon->hitTest(eX, eY)) {
                     grabbedOne = true;
                     shape->inputPolygon->select(eX, eY);
@@ -431,6 +450,17 @@ void ofxMtlMapping2D::mousePressed(ofMouseEventArgs &e)
                     ofLog(OF_LOG_NOTICE, "No shape has been selected, can not add a vertex");
                 }
             }
+
+			if (ofxMtlMapping2DShape::activeShape->shapeType == MAPPING_2D_SHAPE_BLENDMASK) {
+				ofxMtlMapping2DShape* shape = ofxMtlMapping2DShape::activeShape;
+				if (shape) {
+					ofLog(OF_LOG_NOTICE, "Add vertex to shape %i", shape->shapeId);
+					shape->addPoint(eX, eY);
+				}
+				else {
+					ofLog(OF_LOG_NOTICE, "No shape has been selected, can not add a vertex");
+				}
+			}
         }
     }
     
@@ -613,8 +643,15 @@ void ofxMtlMapping2D::loadShapesList()
                             newShape->shapeType = MAPPING_2D_SHAPE_TRIANGLE;
                         } else if (shapeType == "mask") {
                             newShape = new ofxMtlMapping2DMask();
+							cout << "new mask" << endl;
                             newShape->shapeType = MAPPING_2D_SHAPE_MASK;
-                        } else {
+                        }
+						else if (shapeType == "blendMask") {
+							newShape = new ofxMtlMapping2DBlendMask();
+							cout << "new blend mask" << endl;
+							newShape->shapeType = MAPPING_2D_SHAPE_BLENDMASK;
+						}
+						else {
                             newShape = new ofxMtlMapping2DQuad();
                             newShape->shapeType = MAPPING_2D_SHAPE_QUAD;
                         }
@@ -644,7 +681,7 @@ void ofxMtlMapping2D::loadShapesList()
                 _shapesListXML.popTag();
                 
                 
-                if(newShape->shapeType != MAPPING_2D_SHAPE_MASK) {
+                if( newShape->shapeType != MAPPING_2D_SHAPE_MASK && newShape->shapeType != MAPPING_2D_SHAPE_BLENDMASK) {
                     //INPUT QUADS
                     _shapesListXML.pushTag("inputPolygon", 0);
 
@@ -734,7 +771,7 @@ void ofxMtlMapping2D::saveShapesList()
         }
         newShapesListXML.popTag();
         
-        if(shape->shapeType != MAPPING_2D_SHAPE_MASK) {
+        if(shape->shapeType != MAPPING_2D_SHAPE_MASK && shape->shapeType != MAPPING_2D_SHAPE_BLENDMASK) {
             //Input Quads
             tagNum = newShapesListXML.addTag("inputPolygon");
             newShapesListXML.pushTag("inputPolygon", tagNum);
@@ -766,7 +803,10 @@ vector<ofPolyline*> ofxMtlMapping2D::getMaskShapes()
 {
     return ofxMtlMapping2DShapes::getShapesOutputPolylineWithType(MAPPING_2D_SHAPE_MASK);
 }
-
+vector<ofPolyline*> ofxMtlMapping2D::getBlendMaskShapes()
+{
+	return ofxMtlMapping2DShapes::getShapesOutputPolylineWithType(MAPPING_2D_SHAPE_BLENDMASK);
+}
 #pragma mark -
 //--------------------------------------------------------------
 void ofxMtlMapping2D::chessBoard(int nbOfCol)
@@ -808,5 +848,63 @@ void ofxMtlMapping2D::chessBoard(int nbOfCol)
     
     ofSetColor(ofColor::white);
 }
+
+
+
+//--------------------------------------------------------------
+void ofxMtlMapping2D::grid(int nbOfCol)
+{
+	ofSetColor(ofColor::white);
+	ofNoFill();
+
+	int boardWidth = ofGetWidth();
+	int boardHeight = ofGetHeight();
+
+	float squareSize = boardWidth / nbOfCol;
+	int nbOfRow = ceil(boardHeight / squareSize);
+	for (int colId = 0; colId < nbOfCol; colId++) {
+		for (int rowId = 0; rowId < nbOfRow; rowId++) {
+			/*
+			if ((colId + rowId) % 2 == 0) {
+				ofSetColor(ofColor::white);
+			}
+			else {
+				ofSetColor(ofColor::black);
+			}
+			*/
+			ofRect(colId * squareSize, rowId * squareSize, squareSize, squareSize);
+			ofDrawBitmapStringHighlight( "c:"+ofToString(colId)+" r:" + ofToString(rowId), colId * squareSize, rowId * squareSize);
+		}
+	}
+
+	//Frame
+	ofNoFill();
+	ofSetColor(ofColor::yellow);
+	glLineWidth(8.0f);
+	ofRect(.0f, .0f, boardWidth, boardHeight);
+	glLineWidth(1.0f);
+
+	ofFill();
+	ofSetColor(ofColor::red);
+	ofRect(60.0f, .0f, 20.0f, 20.0f);
+	ofSetColor(ofColor::green);
+	ofRect(80.0f, .0f, 20.0f, 20.0f);
+	ofSetColor(ofColor::blue);
+	ofRect(100.0f, .0f, 20.0f, 20.0f);
+
+	ofSetColor(ofColor::white);
+}
+
+
+//--------------------------------------------------------------
+void ofxMtlMapping2D::blend(vector<ofPolyline*>p) {
+	//cout << "polyline"<<p.size() << endl;
+	//for (int i = 0;i < p.size();i++) {
+	//cout <<"p"<<i<<":"<<	p[i]->getArea()<< endl;
+	//}
+	
+	  
+}
+
 
 
